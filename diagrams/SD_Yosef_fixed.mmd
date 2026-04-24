@@ -1,0 +1,37 @@
+sequenceDiagram
+    title Sequence Diagram: Manage Profile (UC-03)
+    
+    actor Customer
+    participant CustomerInterface
+    participant ProfileController
+    participant CustomerModel
+    
+    Customer->>+CustomerInterface: openManageProfile()
+    CustomerInterface->>+ProfileController: getCustomerInput()
+    ProfileController->>+CustomerModel: getProfile()
+    CustomerModel-->>-ProfileController: profile data
+    ProfileController-->>-CustomerInterface: displayProfile()
+    CustomerInterface-->>-Customer: show profile data
+    
+    Customer->>+CustomerInterface: select field to update
+    CustomerInterface->>+ProfileController: displayEditForm()
+    ProfileController-->>-CustomerInterface: editable form
+    CustomerInterface-->>-Customer: displayForm()
+    
+    Customer->>+CustomerInterface: submitUpdatedData()
+    
+    alt valid data
+        CustomerInterface->>+ProfileController: validateInput()
+        ProfileController->>+CustomerModel: updateProfile()
+        CustomerModel-->>-ProfileController: updated profile
+        ProfileController-->>-CustomerInterface: showConfirmation()
+        CustomerInterface-->>Customer: confirmation message
+    else invalid data
+        CustomerInterface->>+ProfileController: validateInput()
+        ProfileController-->>-CustomerInterface: showError(msg)
+        CustomerInterface-->>Customer: error message
+        Customer->>CustomerInterface: correctInformation()
+        CustomerInterface-->>Customer: redisplay form
+    end
+    
+    deactivate CustomerInterface

@@ -1,0 +1,53 @@
+flowchart TD
+    subgraph "Activity Diagram: Manage Order (UC-05)"
+        direction TB
+        
+        Start([Start]) --> Login[Customer logs in]
+        Login --> Open[Opens Manage Orders]
+        Open --> Show[System shows: Place / Modify / Cancel]
+        Show --> Select{Select?}
+        
+        %% Place Order Branch
+        Select -- Place --> AddMeds[Adds medicines]
+        AddMeds --> Stock{Stock available?}
+        Stock -- No --> ShowErr1[Show error]
+        ShowErr1 --> AddMeds
+        Stock -- Yes --> Payment[Process payment]
+        Payment --> Bank{Bank available?}
+        Bank -- No --> SavePending[Save as Pending Payment]
+        SavePending --> Notify[Notify customer to retry]
+        Notify --> EndNode([End])
+        Bank -- Yes --> PaySuccess{Payment success?}
+        PaySuccess -- No --> AskRetry[Ask to retry]
+        AskRetry --> Payment
+        PaySuccess -- Yes --> Create[Create order]
+        Create --> Send1[Send confirmation]
+        Send1 --> EndNode
+        
+        %% Modify Order Branch
+        Select -- Modify --> SelectPend[Select Pending order]
+        SelectPend --> Status1{Status Pending?}
+        Status1 -- No --> ShowErr2[Show error: Cannot modify]
+        ShowErr2 --> EndNode
+        Status1 -- Yes --> Update[Update Order]
+        Update --> Send2[Send confirmation]
+        Send2 --> EndNode
+        
+        %% Cancel Order Branch
+        Select -- Cancel --> SelectPend2[Selects Pending order]
+        SelectPend2 --> Status2{Status Pending?}
+        Status2 -- No --> ShowErr3[Show error: Cannot cancel]
+        ShowErr3 --> EndNode
+        Status2 -- Yes --> Cancel[Cancel order]
+        Cancel --> Send3[Send confirmation]
+        Send3 --> EndNode
+    end
+    
+    %% Styling
+    style Start fill:#000,color:#fff
+    style EndNode fill:#000,color:#fff,stroke:#000,stroke-width:3px
+    style Select fill:#e1f5ff
+    style Stock fill:#e1f5ff
+    style Bank fill:#e1f5ff
+    style PaySuccess fill:#e1f5ff
+    style Status1 fill:#e1f5ff

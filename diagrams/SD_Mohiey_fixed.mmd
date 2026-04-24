@@ -1,0 +1,35 @@
+sequenceDiagram
+    title Sequence Diagram: Manage Order (UC-05)
+    
+    actor Customer
+    participant CustomerInterface
+    participant OrderController
+    participant Order
+    participant Payment
+    
+    %% Login and get options
+    Customer->>CustomerInterface: login()
+    CustomerInterface->>OrderController: getOptions()
+    OrderController-->>CustomerInterface: return options
+    CustomerInterface-->>Customer: displayOrderForm()
+    Customer->>CustomerInterface: selectOption()
+    CustomerInterface->>OrderController: processSelection()
+    
+    %% Alt spans ALL lifelines (Fix: stretch alt over Customer, CustomerInterface, OrderController, Order, Payment)
+    alt Place Order
+        OrderController->>Order: checkStock()
+        Order-->>OrderController: available
+        OrderController->>Order: createOrder()
+        OrderController->>Payment: processPayment()
+        Payment-->>OrderController: confirmed
+    else Modify Order
+        OrderController->>Order: findOrder()
+        Order-->>OrderController: pending
+        OrderController->>Order: modifyOrder()
+    else Cancel Order
+        OrderController->>Order: findOrder()
+        Order-->>OrderController: pending
+        OrderController->>Order: cancelOrder()
+    end
+    
+    OrderController-->>CustomerInterface: confirmation

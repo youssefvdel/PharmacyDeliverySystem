@@ -1,0 +1,51 @@
+flowchart TD
+    subgraph "Activity Diagram: Manage Inventory (UC-01)"
+        direction TB
+        
+        Start([Start]) --> Login[Admin logs in]
+        Login --> Navigate[Navigate to Inventory Management]
+        Navigate --> Search[Search for medicine by name or ID]
+        Search --> Found{Medicine Found?}
+        
+        %% Medicine Found - Update path
+        Found -- Yes --> View[View medicine details]
+        View --> Modify[Modify stock/price]
+        Modify --> Valid{Valid Data?}
+        Valid -- No --> ShowInvalid[Show Invalid Data error]
+        ShowInvalid --> Modify
+        Valid -- Yes --> Save[Click Save Changes]
+        Save --> DBSave{DB Save OK?}
+        DBSave -- Yes --> Success[Show Inventory updated successfully]
+        DBSave -- No --> ShowError[Show Failed to save error]
+        ShowError --> Retry{Retry?}
+        Retry -- Yes --> Save
+        Retry -- No --> Rollback[Rollback changes]
+        Rollback --> EndNode([End])
+        Success --> EndNode
+        
+        %% Medicine Not Found - Add path
+        Found -- No --> ShowAdd[Show Add Medicine option]
+        ShowAdd --> Enter[Enter medicine details]
+        Enter --> AllValid{All Fields Valid?}
+        AllValid -- No --> ShowInvalid2[Show Failed to save error]
+        ShowInvalid2 --> Enter
+        AllValid -- Yes --> ClickAdd[Click Add Medicine]
+        ClickAdd --> DBSave2{DB Save OK?}
+        DBSave2 -- Yes --> Added[Show Medicine added successfully]
+        DBSave2 -- No --> ShowError2[Show Failed to save error]
+        ShowError2 --> Retry2{Retry?}
+        Retry2 -- Yes --> ClickAdd
+        Retry2 -- No --> Rollback2[Rollback changes]
+        Rollback2 --> EndNode
+        Added --> EndNode
+    end
+    
+    %% Styling
+    style Start fill:#000,color:#fff
+    style EndNode fill:#000,color:#fff,stroke:#000,stroke-width:3px
+    style Found fill:#e1f5ff
+    style Valid fill:#e1f5ff
+    style DBSave fill:#e1f5ff
+    style Retry fill:#e1f5ff
+    style AllValid fill:#e1f5ff
+    style DBSave2 fill:#e1f5ff

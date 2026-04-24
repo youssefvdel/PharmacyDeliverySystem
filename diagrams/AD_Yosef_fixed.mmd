@@ -1,0 +1,24 @@
+flowchart TD
+    subgraph "Activity Diagram: Manage Profile (UC-03) - System Perspective"
+        direction TB
+        
+        Start([Start]) --> Open[Open Manage Profile]
+        Open --> Fetch[Fetch profile data]
+        Fetch --> Display[Display current profile]
+        Display --> Select[Select field to update]
+        Select --> Editable[Display editable form]
+        Editable --> Fill[Fill in updated data]
+        Fill --> Verify[Verify data entered]
+        Verify --> Valid{Data valid?}
+        Valid -- No --> ErrorMsg[Show error message]
+        ErrorMsg --> Fill
+        Valid -- Yes --> Store[Store updated data]
+        Store --> Log[Log modification]
+        Log --> Confirm[Show confirmation]
+        Confirm --> See[See confirmation]
+        See --> EndNode([End])
+    end
+    
+    %% Styling
+    style Start fill:#000,color:#fff
+    style EndNode fill:#000,color:#fff,stroke:#000,stroke-width:3px

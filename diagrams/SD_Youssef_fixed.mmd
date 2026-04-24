@@ -1,0 +1,44 @@
+sequenceDiagram
+    title Sequence Diagram: Manage Inventory (UC-01)
+    
+    actor Admin
+    participant AdminPanel
+    participant InventoryController
+    participant Medicine
+    
+    %% Search Medicine Flow
+    alt Medicine Found
+        Admin->>AdminPanel: searchMedicine(query)
+        AdminPanel->>InventoryController: searchMedicine(query)
+        InventoryController->>Medicine: getDetails()
+        Medicine-->>InventoryController: MedicineDTO
+        InventoryController-->>AdminPanel: List<Medicine>
+        AdminPanel-->>Admin: displayInventoryResults()
+        
+        opt Valid data entered
+            Admin->>AdminPanel: updateStock(medId, newQty)
+            AdminPanel->>InventoryController: updateStock(medId, newQty)
+            InventoryController->>Medicine: validateStock()
+            Medicine-->>InventoryController: true/false
+            InventoryController->>Medicine: updateStock(newQty)
+            Medicine-->>InventoryController: success
+            InventoryController->>Medicine: updatePrice(newPrice)
+            Medicine-->>InventoryController: success
+            InventoryController-->>AdminPanel: updateConfirmation
+            AdminPanel-->>Admin: display "Inventory updated successfully"
+        end
+    
+    else Medicine Not Found
+        Admin-->>AdminPanel: show "Add" option
+        Admin->>AdminPanel: addMedicine(details)
+        AdminPanel->>InventoryController: addMedicine(details)
+        InventoryController->>Medicine: createMedicine
+        Medicine-->>InventoryController: success/fail
+        InventoryController-->>AdminPanel: addConfirmation
+        AdminPanel-->>Admin: display "Medicine added successfully"
+    end
+    
+    opt Database save error
+        InventoryController-->>AdminPanel: error("DB error")
+        AdminPanel-->>Admin: "Changes not saved"
+    end

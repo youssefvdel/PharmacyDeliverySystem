@@ -1,0 +1,29 @@
+flowchart TD
+    subgraph "Activity Diagram: Assign Courier (UC-02) - Admin Perspective"
+        direction TB
+        
+        Start([Start]) --> Login[Admin logs into system]
+        Login --> View[View pending orders list]
+        View --> Select[Select order based on priority/location]
+        Select --> ViewC[View available couriers]
+        ViewC --> SelectC[Select courier]
+        SelectC --> Confirm[Confirm assignment]
+        Confirm --> Check{Check courier availability?}
+        Check -- Courier offline --> Suggest[Suggest next available courier]
+        Suggest --> ViewC
+        Check -- Courier Unavailable --> Alt{Alternative action?}
+        Alt -- Cancel --> DispCancel[Display success message]
+        DispCancel --> EndNode([End])
+        Alt -- Wait --> Refresh[Refresh courier list]
+        Refresh --> ViewC
+        Check -- Courier Available --> Assign[Assign courier to order]
+        Assign --> Update[Update order status to Dispatch]
+        Update --> Notify[Send notification to courier]
+        Notify --> DispSuccess[Display success message]
+        DispSuccess --> EndNode
+    end
+    
+    %% Styling
+    style Start fill:#000,color:#fff
+    style EndNode fill:#000,color:#fff,stroke:#000,stroke-width:3px
+    style Check fill:#e1f5ff

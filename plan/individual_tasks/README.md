@@ -16,13 +16,20 @@
 
 ---
 
-## Phase 3 Deliverables
+## Phase 3 Deliverables (From Email + E-Learning Template)
 
 ### 1. Final Report (ONE PDF)
-- Phase 1 (updated)
-- Phase 2 (updated with feedback fixes)
-- Database Schema (ERD + DDL)
-- Code Screenshots (5 functionalities)
+- Amended system description
+- Functional & non-functional requirements
+- Analysis & Design Diagrams:
+  - Context Diagram
+  - Use Case Diagram
+  - **Class Diagram** (updated with 7 fixes)
+  - **Sequence Diagrams** (updated with 3 fixes)
+  - **Database Schema Diagrams** (visual ERD - NEW!)
+- Database DDL script
+- **Project Code + Screenshots** (desktop application GUI)
+- **Two Test Scenarios + Test Reports** (NEW!)
 - Contribution Table
 
 ### 2. Project Code (ZIP)
@@ -48,14 +55,14 @@
 | Fix Activity Diagram join/end nodes | Yousef Mohiey, Yousif Hafez |
 | Fix Sequence Diagrams | All |
 
-### Day 2 (23/4) - Code Implementation
+### Day 2 (23/4) - Code + Test Scenarios
 | Task | Who |
 |------|-----|
-| Manage Inventory code | Youssef Adel |
-| Assign Courier code | Tarek Saeed |
-| Manage Profile code | Yosef Gad |
-| Track Order code | Yousif Hafez |
-| Manage Order code | Yousef Mohiey |
+| Manage Inventory code + tests | Youssef Adel |
+| Assign Courier code + tests | Tarek Saeed |
+| Manage Profile code + tests | Yosef Gad |
+| Track Order code + tests | Yousif Hafez |
+| Manage Order code + tests | Yousef Mohiey |
 
 ### Day 3 (24/4) - Merge & Submit
 | Task | Who |
@@ -86,6 +93,8 @@
 4. **No AI for submission content** - Rewrite everything in your own words
 5. **Exception handling REQUIRED** - try/catch on ALL risky operations
 6. **Derby database** - See Week 11 lab for integration guide
+7. **Database Schema Diagrams** - Visual ERD required (not just SQL)
+8. **Test Scenarios** - 2 per member with pass/fail reports
 
 ---
 

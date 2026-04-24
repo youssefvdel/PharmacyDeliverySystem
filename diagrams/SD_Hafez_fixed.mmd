@@ -1,0 +1,62 @@
+sequenceDiagram
+    title Sequence Diagram: Track Order History (UC-04)
+    
+    actor Customer
+    participant CustomerInterface
+    participant OrderController
+    participant Order
+    participant TrackingInfo
+    
+    %% Customer has activation bar (Fix: add activation bar on Customer)
+    activate Customer
+    Customer->>CustomerInterface: OpenOrderHistory()
+    activate CustomerInterface
+    CustomerInterface->>OrderController: getOrderHistory(customerId)
+    activate OrderController
+    OrderController->>Order: getOrderHistory(customerId)
+    activate Order
+    Order-->>OrderController: OrderList()
+    deactivate Order
+    OrderController-->>CustomerInterface: displayOrderHistory(orderList)
+    deactivate OrderController
+    CustomerInterface-->>Customer: show order history
+    deactivate CustomerInterface
+    
+    Customer->>CustomerInterface: SelectOrder(orderId)
+    activate CustomerInterface
+    CustomerInterface->>OrderController: getOrder(orderId)
+    activate OrderController
+    OrderController->>Order: FindOrder(orderId)
+    activate Order
+    Order-->>OrderController: Selected Order
+    deactivate Order
+    OrderController-->>CustomerInterface: showError(Available or not?)
+    deactivate OrderController
+    CustomerInterface-->>Customer: displayError()
+    deactivate CustomerInterface
+    
+    alt Invalid order
+        OrderController->>TrackingInfo: trackOrder(orderId)
+        activate TrackingInfo
+        TrackingInfo-->>OrderController: trackingInfo
+        deactivate TrackingInfo
+        OrderController-->>CustomerInterface: displayOrderStatus(trackingInfo)
+        CustomerInterface-->>Customer: showStatus()
+    end
+    
+    loop Live updates(refresh)
+        CustomerInterface->>OrderController: requestUpdate(orderId)
+        activate OrderController
+        OrderController->>TrackingInfo: updateStatus()
+        activate TrackingInfo
+        TrackingInfo-->>OrderController: updatedTrackingInfo
+        deactivate TrackingInfo
+        OrderController-->>CustomerInterface: updateDisplay(updatedTrackingInfo)
+        deactivate OrderController
+        CustomerInterface-->>Customer: showUpdatedStatus()
+    end
+    
+    opt Network issue
+        CustomerInterface-->>Customer: showError(Connection Problem)
+    end
+    

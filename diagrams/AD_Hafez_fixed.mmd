@@ -1,0 +1,22 @@
+flowchart TD
+    subgraph "Activity Diagram: Track Order Status (UC-04)"
+        direction TB
+        
+        Start([Start]) --> Current[Current orders page]
+        Current --> Select[Select order to track]
+        Select --> Available{Order available or not?}
+        Available -- Unavailable order --> ShowErr[Display retrieval error message]
+        ShowErr --> EndNode([End])
+        Available -- Available order --> Retrieve[Retrieve latest order information]
+        Retrieve --> Retrieved{Order retrieved or not?}
+        Retrieved -- No --> ShowErr2[Display retrieval error message]
+        ShowErr2 --> EndNode
+        Retrieved -- Yes --> Display[Display current order status]
+        Display --> View[View order progress]
+        View --> EndNode
+    end
+    
+    %% Styling
+    style Start fill:#000,color:#fff
+    style EndNode fill:#000,color:#fff,stroke:#000,stroke-width:3px
+    style Available fill:#e1f5ff

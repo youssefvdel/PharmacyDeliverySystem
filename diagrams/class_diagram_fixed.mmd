@@ -1,0 +1,196 @@
+classDiagram
+    %% Abstract Staff class (Fix #6)
+    class Staff {
+        <<abstract>>
+        - staffId: String
+        - name: String
+        - email: String
+        - password: String
+        + login(): Boolean
+        + logout(): void
+    }
+
+    class Administrator {
+        - adminId: String
+        + manageMedicineInventory()
+        + assignCourierToOrder()
+    }
+
+    class Courier {
+        - courierId: String
+        - courierName: String
+        - phoneNumber: String
+        - isAvailable: Boolean
+        - currentLocation: String
+        - deliveryArea: String
+        + checkAvailability(): Boolean
+        + updateLocation(): void
+        + acceptDelivery(): Boolean
+        + getAssignedOrders(): ArrayList~Order~
+    }
+
+    %% Inventory class (Fix #5)
+    class Inventory {
+        - inventoryId: int
+        - stockLevel: int
+        - price: double
+        - expiryDate: Date
+        + updateStock(medicineId: int, newQty: int): Boolean
+        + checkAvailability(medicineId: int): Boolean
+        + updatePrice(medicineId: int, newPrice: double): Boolean
+    }
+
+    class Medicine {
+        - medicineId: int
+        - name: String
+        - category: String
+        - price: double
+        - stockQuantity: int
+        - expiryDate: Date
+        - description: String
+        + updateStock(quantity: int): void
+        + updatePrice(newPrice: double): Boolean
+        + isExpired(): Boolean
+        + isInStock(requestedQty: int): Boolean
+        + getDetails(): String
+    }
+
+    class Customer {
+        - customerId: String
+        - name: String
+        - email: String
+        - password: String
+        - phone: String
+        - address: String
+        - orderHistory: ArrayList~Order~
+        + login(): Boolean
+        + logout(): void
+        + processOrder(): void
+        + trackOrderStatus(): String
+        + manageCustomerProfile(): void
+    }
+
+    class Order {
+        - orderId: String
+        - customerId: String
+        - orderDate: Date
+        - priority: Priority
+        - totalAmount: Double
+        - status: OrderStatus
+        - deliveryAddress: String
+        - courierId: String
+        + placeOrder(): Boolean
+        + cancelOrder(): Boolean
+        + checkStock(): Boolean
+        + updateStatus(): void
+        + assignCourier(courierId: String): Boolean
+        + findOrder(int): Order
+    }
+
+    %% Payment with Composition (Fix #3)
+    class Payment {
+        - paymentId: String
+        - orderId: String
+        - amount: Double
+        - method: PaymentMethod
+        - status: PaymentStatus
+        - transactionId: String
+        - paymentDate: Date
+        + processPayment(): Boolean
+        + refund(): void
+        + getReceipt(): String
+        + getStatus(): PaymentStatus
+    }
+
+    class CourierAssignmentController {
+        + assignCourier(orderId, courierId): Boolean
+        + findNearestCourier(currentLocation): Courier
+        + selectCourier(courierId)
+        + getCouriers(): ArrayList~Courier~
+        + getPendingOrders(): ArrayList~Order~
+        + checkAvailability(courierId): Boolean
+        + notifyCourier(courierId: String)
+    }
+
+    class InventoryController {
+        + getAllMedicines(): List~Medicine~
+        + searchMedicine(query: String): List~Medicine~
+        + addMedicine(name, category, price, stock, expiry): Boolean
+        + updateStock(medId: int, newQty: int): Boolean
+        + updatePrice(medId: int, newPrice: double): Boolean
+        + deleteMedicine(medId: int): Boolean
+        + validateStock(medId: int, requestedQty: int): Boolean
+    }
+
+    class OrderController {
+        - orderList: List~Order~
+        - currentOrder: Order
+        + createOrder(): Boolean
+        + modifyOrder(): Boolean
+        + cancelOrder(): Boolean
+        + validateOrder(): Boolean
+        + calculateTotal(): Double
+        + checkStock(): Boolean
+        + getOrderHistory(Customer): ArrayList~Order~
+        + getOrder(int): Order
+        + getOptions(): void
+        + processSelection(): void
+    }
+
+    %% Enumerations
+    class OrderStatus {
+        <<enumeration>>
+        Pending
+        Confirmed
+        Cancelled
+        OutForDelivery
+        Delivered
+    }
+
+    class PaymentMethod {
+        <<enumeration>>
+        Cash
+        CreditCard
+        OnlinePayment
+        Wallet
+    }
+
+    class PaymentStatus {
+        <<enumeration>>
+        Success
+        Failed
+        Pending
+        Refunded
+    }
+
+    class Priority {
+        <<enumeration>>
+        Low
+        Medium
+        High
+        Emergency
+    }
+
+    %% Inheritance (Fix #6)
+    Staff <|-- Administrator
+    Staff <|-- Courier
+
+    %% Associations with relation names (Fix #2)
+    Customer "1" -- "0..*" Order : places
+    Order "1" -- "0..1" Payment : has
+    Administrator "1" -- "0..*" Inventory : manages
+    Administrator "1" -- "0..*" Courier : assigns
+    Order "1" -- "0..1" Courier : delivered by
+    Inventory "1" -- "1" Medicine : tracks
+    OrderController ..> Order
+    InventoryController ..> Medicine
+    CourierAssignmentController ..> Courier
+    CourierAssignmentController ..> Order
+
+    %% Composition: Order owns Payment (Fix #3)
+    Order *-- Payment
+
+    %% Order attributes (Fix #4 - DeliveryAddress, OrderItem, TrackingInfo as attributes)
+    %% Note: These are now attributes inside Order, not separate classes
+
+    %% Remove arrowheads - plain lines with multiplicity only (Fix #7)

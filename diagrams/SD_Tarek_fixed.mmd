@@ -1,0 +1,41 @@
+sequenceDiagram
+    title Sequence Diagram: Assign Courier (UC-02)
+    
+    actor Admin
+    participant AdminInterface
+    participant CourierAssignmentController
+    participant Order
+    participant Courier
+    
+    Admin->>AdminInterface: displayPendingOrders()
+    AdminInterface->>CourierAssignmentController: getPendingOrders()
+    CourierAssignmentController-->>AdminInterface: pendingOrdersList
+    AdminInterface-->>Admin: showPendingOrders()
+    
+    Admin->>AdminInterface: selectOrder(orderId)
+    
+    loop Courier Not Assigned AND Not Cancelled
+        Admin->>AdminInterface: displayCouriers()
+        AdminInterface->>CourierAssignmentController: getCouriers()
+        CourierAssignmentController-->>AdminInterface: CouriersList
+        AdminInterface-->>Admin: ShowCouriers
+        
+        Admin->>AdminInterface: selectCourier(courierId)
+        AdminInterface->>CourierAssignmentController: selectCourier(courierId)
+        CourierAssignmentController->>Courier: checkAvailability()
+        Courier-->>CourierAssignmentController: isAvailable
+    end
+    
+    alt Courier Available
+        CourierAssignmentController->>Order: assignCourier(courierId)
+        Order-->>CourierAssignmentController: assigned
+        CourierAssignmentController->>Courier: acceptDelivery()
+        Courier-->>CourierAssignmentController: Accepted
+        CourierAssignmentController-->>AdminInterface: Success
+        AdminInterface-->>Admin: showSuccessMessage()
+    else Courier Unavailable
+        CourierAssignmentController-->>AdminInterface: Failure
+        AdminInterface-->>Admin: Show Error Message
+        Admin->>AdminInterface: displayCouriers
+        AdminInterface-->>Admin: ShowCouriers
+    end
