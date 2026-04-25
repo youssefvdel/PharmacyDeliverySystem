@@ -11,7 +11,8 @@ import ui.CustomerInterfaceFrame;
 import ui.CourierAssignments;
 /**
  *
- * @author verhafter
+ * @author Yousef Mohamed Mohiey - 248679
+ * @since Phase 3
  */
 public class LoginFrame extends javax.swing.JFrame {
     
