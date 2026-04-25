@@ -1,84 +1,61 @@
 package controllers;
 
-import enums.OrderStatus;
-import java.util.Date;
-import model.Courier;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import model.Order;
+import util.DatabaseConnection;
 
 public class TrackOrderController {
 
-    public boolean placeOrder(Order order) {
-
-        if (order.getCustomerId() == null || order.getCustomerId().isEmpty()) {
-            return false;
+    public Order getOrderStatus(String orderId) {
+        String sql = "SELECT * FROM OrderTable WHERE orderId=?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, orderId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Order order = new Order();
+                order.setOrderId(rs.getString("orderId"));
+                order.setCustomerId(rs.getString("customerId"));
+                order.setTotalAmount(rs.getDouble("totalAmount"));
+                order.setDeliveryAddress(rs.getString("deliveryAddress"));
+                order.setOrderDate(rs.getString("orderDate"));
+                String status = rs.getString("status");
+                if (status != null) {
+                    order.setStatus(enums.OrderStatus.valueOf(status.toUpperCase()));
+                }
+                return order;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        if (order.getDeliveryAddress() == null || order.getDeliveryAddress().isEmpty()) {
-            return false;
-        }
-
-        if (order.getTotalAmount() <= 0) {
-            return false;
-        }
-
-        order.setStatus(OrderStatus.PENDING);
-        order.setCurrentStatus("Order placed successfully. Waiting for confirmation.");
-        order.setLastUpdated(new Date());
-
-        return true;
+        return null;
     }
 
-    public boolean cancelOrder(Order order) {
-
-        if (order.getStatus() == OrderStatus.DELIVERED ||
-            order.getStatus() == OrderStatus.CANCELLED) {
-            return false;
+    public List<Order> getOrderHistory(String customerId) {
+        List<Order> orders = new ArrayList<>();
+        String sql = "SELECT * FROM OrderTable WHERE customerId=? ORDER BY orderDate DESC";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, customerId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Order order = new Order();
+                order.setOrderId(rs.getString("orderId"));
+                order.setCustomerId(rs.getString("customerId"));
+                order.setTotalAmount(rs.getDouble("totalAmount"));
+                order.setDeliveryAddress(rs.getString("deliveryAddress"));
+                order.setOrderDate(rs.getString("orderDate"));
+                String status = rs.getString("status");
+                if (status != null) {
+                    order.setStatus(enums.OrderStatus.valueOf(status.toUpperCase()));
+                }
+                orders.add(order);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        order.setStatus(OrderStatus.CANCELLED);
-        order.setCurrentStatus("Order cancelled by customer.");
-        order.setLastUpdated(new Date());
-
-        return true;
-    }
-
-    public boolean modifyOrder(Order order) {
-
-        if (order.getStatus() != OrderStatus.PENDING) {
-            return false;
-        }
-
-        order.setCurrentStatus("Order modified successfully.");
-        order.setLastUpdated(new Date());
-
-        return true;
-    }
-
-    public boolean assignCourier(Order order, Courier courier) {
-
-        if (courier == null) {
-            return false;
-        }
-
-        if (order.getCourier() != null) {
-            return false;
-        }
-
-        if (order.getStatus() != OrderStatus.PENDING) {
-            return false;
-        }
-
-        if (!courier.IsAvailable()) {
-            return false;
-        }
-
-        order.setCourier(courier);
-        courier.setIsAvailable(false);
-
-        order.setStatus(OrderStatus.CONFIRMED);
-        order.setCurrentStatus("Courier assigned. Order confirmed.");
-        order.setLastUpdated(new Date());
-
-        return true;
+        return orders;
     }
 }
