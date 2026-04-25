@@ -7,116 +7,85 @@ import java.util.List;
 import model.Courier;
 import model.Order;
 import enums.OrderStatus;
+import util.DatabaseConnection;
 
 public class AssignCourierController {
 
-    // get pending orders
     public List<Order> getPendingOrders() {
-
         List<Order> orders = new ArrayList<>();
+        String sql = "SELECT * FROM OrderTable WHERE status = 'Pending'";
 
-        String sql = "SELECT * FROM ORDER_TABLE WHERE STATUS = 'PENDING'";
-
-        try (
-            Connection conn = DBConnection.getConnection();
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery()
-        ) {
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
+                Order order = new Order();
+                order.setOrderId(rs.getString("orderId"));
+                order.setCustomerId(rs.getString("customerId"));
+                order.setDeliveryAddress(rs.getString("deliveryAddress"));
+                order.setTotalAmount(rs.getDouble("totalAmount"));
+                order.setOrderDate(rs.getString("orderDate"));
 
-                // 🔹 courier = null initially (not assigned yet)
-                Courier courier = null;
-
-                // 🔹 convert status string → enum
-                OrderStatus status = OrderStatus.valueOf(rs.getString("STATUS"));
-
-                Order order = new Order(
-                    rs.getString("ORDER_ID"),
-                    rs.getString("CUSTOMER_ID"),
-                    courier,
-                    rs.getString("ORDER_DATE"), // now string
-                    status,
-                    rs.getDouble("TOTAL_AMOUNT"),
-                    rs.getString("DELIVERY_ADDRESS"),      // make sure column exists
-                    rs.getString("ESTIMATED_DELIVERY"),    // make sure column exists
-                    rs.getString("CURRENT_STATUS"),        // make sure column exists
-                    rs.getTimestamp("LAST_UPDATED")        // Date
-                );
-
+                String statusStr = rs.getString("status");
+                if (statusStr != null) {
+                    order.setStatus(OrderStatus.valueOf(statusStr.toUpperCase()));
+                }
                 orders.add(order);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return orders;
     }
 
-    // get available couriers
     public List<Courier> getAvailableCouriers() {
-
         List<Courier> couriers = new ArrayList<>();
+        String sql = "SELECT c.courierId, s.name, s.email, s.password, s.phonenum, c.isAvailable " +
+                "FROM Courier c JOIN Staff s ON c.staffId = s.staffId " +
+                "WHERE c.isAvailable = true AND s.role = 'Courier'";
 
-        String sql =
-            "SELECT * FROM STAFF WHERE ROLE='COURIER' AND IS_AVAILABLE=1";
-
-        try (
-            Connection conn = DBConnection.getConnection();
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery()
-        ) {
+        try (Connection conn = DatabaseConnection.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-
                 Courier courier = new Courier(
-                    rs.getString("STAFF_ID"),
-                    rs.getString("NAME"),
-                    rs.getString("EMAIL"),
-                    rs.getString("PASSWORD"),
-                    rs.getString("PHONE"),
-                    rs.getInt("IS_AVAILABLE") == 1
-                );
-
+                        rs.getString("courierId"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("password"),
+                        rs.getString("phonenum"),
+                        rs.getBoolean("isAvailable"));
                 couriers.add(courier);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return couriers;
     }
 
-    // assign courier
     public void assignCourier(String orderId, String courierId)
-        throws InvalidSelectionException {
-
+            throws InvalidSelectionException {
         if (orderId == null || courierId == null) {
             throw new InvalidSelectionException();
         }
 
-        try (Connection conn = DBConnection.getConnection()) {
-
+        try (Connection conn = DatabaseConnection.getConnection()) {
             conn.setAutoCommit(false);
 
-            // 🔹 update order
-            String sql1 =
-                "UPDATE ORDER_TABLE SET COURIER_ID=?, STATUS='CONFIRMED' WHERE ORDER_ID=?";
+            String sql1 = "UPDATE OrderTable SET courierId=?, status='Confirmed' WHERE orderId=?";
             PreparedStatement ps1 = conn.prepareStatement(sql1);
             ps1.setString(1, courierId);
             ps1.setString(2, orderId);
             ps1.executeUpdate();
 
-            // update courier
-            String sql2 = "UPDATE STAFF SET IS_AVAILABLE=0 WHERE STAFF_ID=?";
+            String sql2 = "UPDATE Courier SET isAvailable=false WHERE courierId=?";
             PreparedStatement ps2 = conn.prepareStatement(sql2);
             ps2.setString(1, courierId);
             ps2.executeUpdate();
 
             conn.commit();
-
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException("Database error during assignment");

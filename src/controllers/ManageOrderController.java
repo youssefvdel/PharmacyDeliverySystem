@@ -1,9 +1,6 @@
 package controllers;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import model.Order;
 import util.DatabaseConnection;
 
 public class ManageOrderController {
@@ -12,7 +9,7 @@ public class ManageOrderController {
         String id = "O" + System.currentTimeMillis();
         String sql = "INSERT INTO OrderTable (orderId, customerId, totalAmount, deliveryAddress, status) VALUES (?, ?, ?, ?, 'Pending')";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+                PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, id);
             ps.setString(2, customerId);
             ps.setDouble(3, total);
@@ -27,7 +24,7 @@ public class ManageOrderController {
     public boolean cancelOrder(String orderId) {
         String sql = "UPDATE OrderTable SET status='Cancelled' WHERE orderId=? AND status='Pending'";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+                PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, orderId);
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
