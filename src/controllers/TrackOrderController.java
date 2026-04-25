@@ -20,6 +20,7 @@ public class TrackOrderController {
                 order.setCustomerId(rs.getString("customerId"));
                 order.setTotalAmount(rs.getDouble("totalAmount"));
                 order.setDeliveryAddress(rs.getString("deliveryAddress"));
+                order.setOrderDate(rs.getString("orderDate"));
                 String status = rs.getString("status");
                 if (status != null) {
                     order.setStatus(enums.OrderStatus.valueOf(status.toUpperCase()));
@@ -45,6 +46,7 @@ public class TrackOrderController {
                 order.setCustomerId(rs.getString("customerId"));
                 order.setTotalAmount(rs.getDouble("totalAmount"));
                 order.setDeliveryAddress(rs.getString("deliveryAddress"));
+                order.setOrderDate(rs.getString("orderDate"));
                 order.setStatus(enums.OrderStatus.valueOf(rs.getString("status").toUpperCase()));
                 orders.add(order);
             }

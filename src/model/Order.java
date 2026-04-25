@@ -30,20 +30,21 @@ public class Order {
     }
 
     public Order(String orderId, String customerId, Courier courier, String orderDate,
-             OrderStatus status, double totalAmount, String deliveryAddress,
+             Priority priority, OrderStatus status, double totalAmount, String deliveryAddress,
              String estimatedDelivery, String currentStatus, java.util.Date lastUpdated) {
 
         this.orderId = orderId;
         this.customerId = customerId;
         this.courier = courier;
         this.orderDate = orderDate;
+        this.priority = priority;
         this.status = status;
         this.totalAmount = totalAmount;
         this.deliveryAddress = deliveryAddress;
         this.estimatedDelivery = estimatedDelivery;
         this.currentStatus = currentStatus;
         this.lastUpdated = lastUpdated;
-this.priority = priority;        }
+    }
 
         public String getOrderId() {
             return orderId;
@@ -96,6 +97,9 @@ this.priority = priority;        }
         public String getDeliveryAddress() {
             return deliveryAddress;
         }
+
+        public Priority getPriority() { return priority; }
+        public void setPriority(Priority priority) { this.priority = priority; }
 
         public void setDeliveryAddress(String deliveryAddress) {
             this.deliveryAddress = deliveryAddress;

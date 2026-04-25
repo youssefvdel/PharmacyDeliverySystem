@@ -1,14 +1,11 @@
 
 package ui;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import controllers.TrackOrderController;
+import model.Order;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.SwingConstants;
-import util.DatabaseConnection;
+import java.util.List;
 
 /**
  *
@@ -29,7 +26,7 @@ public class TrackOrderFrame extends javax.swing.JFrame {
  public TrackOrderFrame() {
     initComponents();
 
-    String customerId = "C001";
+    String customerId = "CU001";
 
     loadOrders(customerId);
 
@@ -48,29 +45,14 @@ public class TrackOrderFrame extends javax.swing.JFrame {
  
  
  private void showOrderDetails(String orderId) {
-
-    String sql = "SELECT * FROM ORDER_TABLE WHERE ORDER_ID = ?";
-
-    try {
-        Connection conn = DatabaseConnection.getConnection();
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setString(1, orderId);
-        ResultSet rs = ps.executeQuery();
-
-        if (rs.next()) {
-            OrderIdValue.setText(rs.getString("ORDER_ID"));
-            StatusValue.setText(rs.getString("STATUS"));
-            AddressValue.setText(rs.getString("ADDRESS"));
-            CurrentStatusValue.setText(rs.getString("STATUS"));
-            LastUpdatedValue.setText(rs.getDate("LAST_UPDATED").toString());
-        }
-
-        rs.close();
-        ps.close();
-        conn.close();
-
-    } catch (SQLException e) {
-        JOptionPane.showMessageDialog(this, "Could not load order details: " + e.getMessage());
+    TrackOrderController controller = new TrackOrderController();
+    Order order = controller.getOrderStatus(orderId);
+    if (order != null) {
+        OrderIdValue.setText(order.getOrderId());
+        StatusValue.setText(order.getStatus().toString());
+        AddressValue.setText(order.getDeliveryAddress());
+        CurrentStatusValue.setText(order.getStatus().toString());
+        LastUpdatedValue.setText(order.getOrderDate() != null ? order.getOrderDate() : "N/A");
     }
 }
  
@@ -80,35 +62,17 @@ public class TrackOrderFrame extends javax.swing.JFrame {
  
  
 private void loadOrders(String customerId) {
-
-    String sql = "SELECT ORDER_ID, STATUS, ORDER_DATE, LAST_UPDATED "
-               + "FROM ORDER_TABLE WHERE CUSTOMER_ID = ? "
-               + "ORDER BY ORDER_DATE DESC";
-
-    try {
-        Connection conn = DatabaseConnection.getConnection();
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setString(1, customerId);
-        ResultSet rs = ps.executeQuery();
-
-        DefaultTableModel model = (DefaultTableModel) OrderTable.getModel();
-        model.setRowCount(0);
-
-        while (rs.next()) {
-            model.addRow(new Object[]{
-                rs.getString("ORDER_ID"),
-                rs.getString("STATUS"),
-                rs.getDate("ORDER_DATE"),
-                rs.getDate("LAST_UPDATED")
-            });
-        }
-
-        rs.close();
-        ps.close();
-        conn.close();
-
-    } catch (SQLException e) {
-        JOptionPane.showMessageDialog(this, "Could not load orders: " + e.getMessage());
+    TrackOrderController controller = new TrackOrderController();
+    List<Order> orders = controller.getOrderHistory(customerId);
+    DefaultTableModel model = (DefaultTableModel) OrderTable.getModel();
+    model.setRowCount(0);
+    for (Order order : orders) {
+        model.addRow(new Object[]{
+            order.getOrderId(),
+            order.getStatus().toString(),
+            order.getOrderDate(),
+            order.getOrderDate() != null ? order.getOrderDate() : "N/A"
+        });
     }
 }
           
@@ -295,7 +259,7 @@ private void loadOrders(String customerId) {
     }// </editor-fold>//GEN-END:initComponents
 
     private void RefreshOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RefreshOrderActionPerformed
-       loadOrders("C001");
+       loadOrders("CU001");
     }//GEN-LAST:event_RefreshOrderActionPerformed
 
     /**

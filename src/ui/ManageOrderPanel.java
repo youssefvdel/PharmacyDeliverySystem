@@ -3,11 +3,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package ui;
-import java.sql.*;
+import controllers.ManageOrderController;
+import model.Medicine;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import util.DatabaseConnection;
-import java.sql.SQLException;
+import java.util.List;
 
 /**
  *
@@ -18,14 +18,6 @@ public class ManageOrderPanel extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ManageOrderPanel.class.getName());
 
-        private Connection getConnection() {
-        try {
-            return util.DatabaseConnection.getConnection();
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Database Connection Failed: " + e.getMessage());
-            return null;
-        }
-    }
     /**
      * Creates new form ManageOrderPanel
      */
@@ -301,104 +293,49 @@ public class ManageOrderPanel extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
-           String searchText = jTextField1.getText().trim();
-    
-    if (searchText.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Please enter a medicine name");
-        return;
-    }
-    
-    DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-    model.setRowCount(0); // Clear existing rows
-    
-    try {
-        Connection conn = getConnection();
-        if (conn != null) {
-            // SQL: Search medicines by name (case-insensitive)
-            String sql = "SELECT * FROM MEDICINE WHERE NAME LIKE ?";
-            PreparedStatement pst = conn.prepareStatement(sql);
-            pst.setString(1, "%" + searchText + "%");
-            ResultSet rs = pst.executeQuery();
-            
-            while (rs.next()) {
-                // Add row: ID, Name, Price, Stock
-                // IMPORTANT: Use UPPERCASE column names for Derby
-                model.addRow(new Object[]{
-                    rs.getInt("ID"), 
-                    rs.getString("NAME"), 
-                    rs.getDouble("PRICE"), 
-                    rs.getInt("STOCK")
-                });
-            }
-            conn.close();
+        String searchText = jTextField1.getText().trim();
+        if (searchText.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please enter a medicine name");
+            return;
         }
-    } catch (SQLException e) {
-        JOptionPane.showMessageDialog(this, "Search Error: " + e.getMessage());
-    }
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        model.setRowCount(0);
+        ManageOrderController controller = new ManageOrderController();
+        List<Medicine> medicines = controller.searchMedicines(searchText);
+        for (Medicine m : medicines) {
+            model.addRow(new Object[]{
+                m.getMedicineId(),
+                m.getName(),
+                m.getPrice(),
+                m.getStockQuantity()
+            });
+        }
     }//GEN-LAST:event_btnSearchActionPerformed
 
     private void btnPlaceOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPlaceOrderActionPerformed
         int row = jTable1.getSelectedRow();
-    
-    if (row == -1) {
-        JOptionPane.showMessageDialog(this, "Please select a medicine from the table");
-        return;
-    }
-    
-    try {
-        // Get values from selected table row
-        int medId = (int) jTable1.getValueAt(row, 0); // ID column
-        int qty = Integer.parseInt(qtyTextField.getText().trim());
-        
-        if (qty <= 0) {
-            JOptionPane.showMessageDialog(this, "Quantity must be greater than 0");
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Please select a medicine from the table");
             return;
         }
-        
-        Connection conn = getConnection();
-        if (conn != null) {
-            // 1- Check current stock
-            String checkSql = "SELECT STOCK FROM MEDICINE WHERE ID = ?";
-            PreparedStatement pst = conn.prepareStatement(checkSql);
-            pst.setInt(1, medId);
-            ResultSet rs = pst.executeQuery();
-            
-            if (rs.next()) {
-                int currentStock = rs.getInt("STOCK");
-                
-                if (currentStock >= qty) {
-                    // 2- Insert new order
-                    String insertSql = "INSERT INTO ORDERS (MEDICINE_ID, QUANTITY, STATUS) VALUES (?, ?, 'Pending')";
-                    PreparedStatement pstInsert = conn.prepareStatement(insertSql);
-                    pstInsert.setInt(1, medId);
-                    pstInsert.setInt(2, qty);
-                    pstInsert.executeUpdate();
-                    
-                    // 3- Update stock level
-                    String updateSql = "UPDATE MEDICINE SET STOCK = ? WHERE ID = ?";
-                    PreparedStatement pstUpdate = conn.prepareStatement(updateSql);
-                    pstUpdate.setInt(1, currentStock - qty);
-                    pstUpdate.setInt(2, medId);
-                    pstUpdate.executeUpdate();
-                    
-                    JOptionPane.showMessageDialog(this, "✓ Order Placed Successfully!");
-                    
-                    // Refresh the table
-                    btnSearchActionPerformed(evt);
-                    qtyTextField.setText("1");
-                    
-                } else {
-                    JOptionPane.showMessageDialog(this, "✗ Not enough stock! Available: " + currentStock);
-                }
+        try {
+            int medId = (int) jTable1.getValueAt(row, 0);
+            int qty = Integer.parseInt(qtyTextField.getText().trim());
+            if (qty <= 0) {
+                JOptionPane.showMessageDialog(this, "Quantity must be greater than 0");
+                return;
             }
-            conn.close();
+            ManageOrderController controller = new ManageOrderController();
+            if (controller.placeOrder(medId, qty)) {
+                JOptionPane.showMessageDialog(this, "Order Placed Successfully!");
+                btnSearchActionPerformed(evt);
+                qtyTextField.setText("1");
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to place order. Check stock or try again.");
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Please enter a valid quantity number");
         }
-    } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(this, "Please enter a valid quantity number");
-    } catch (SQLException e) {
-        JOptionPane.showMessageDialog(this, "Order Error: " + e.getMessage());
-    }
-        
     }//GEN-LAST:event_btnPlaceOrderActionPerformed
 
     /**
