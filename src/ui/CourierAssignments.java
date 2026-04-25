@@ -22,6 +22,10 @@ public class CourierAssignments extends javax.swing.JFrame {
     /**
      * Creates new form CourierAssignments
      */
+     public CourierAssignments() {
+         this("C001");
+     }
+
      public CourierAssignments(String courierId) {
     initComponents();
     this.courierId = courierId;
