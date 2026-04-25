@@ -120,21 +120,20 @@ public class ManageOrderPanel extends javax.swing.JFrame {
                         .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 212, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnSearch)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addGap(0, 12, Short.MAX_VALUE))
                     .addGroup(placePanelLayout.createSequentialGroup()
                         .addContainerGap()
-                        .addGroup(placePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(placePanelLayout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(qtyTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnPlaceOrder))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, placePanelLayout.createSequentialGroup()
-                                .addGap(0, 30, Short.MAX_VALUE)
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(qtyTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnPlaceOrder)
                         .addGap(12, 12, 12)))
                 .addGap(29, 29, 29))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, placePanelLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 355, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(24, 24, 24))
         );
         placePanelLayout.setVerticalGroup(
             placePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -159,8 +158,10 @@ public class ManageOrderPanel extends javax.swing.JFrame {
         newQty.setText("New Qty:");
 
         btnLoad.setText("Load");
+        btnLoad.addActionListener(this::btnLoadActionPerformed);
 
         jButton3.setText("Save");
+        jButton3.addActionListener(this::jButton3ActionPerformed);
 
         javax.swing.GroupLayout modifyPanelLayout = new javax.swing.GroupLayout(modifyPanel);
         modifyPanel.setLayout(modifyPanelLayout);
@@ -202,6 +203,7 @@ public class ManageOrderPanel extends javax.swing.JFrame {
         jTextField4.addActionListener(this::jTextField4ActionPerformed);
 
         jButton2.setText("Cancel");
+        jButton2.addActionListener(this::jButton2ActionPerformed);
 
         javax.swing.GroupLayout cancelPanelLayout = new javax.swing.GroupLayout(cancelPanel);
         cancelPanel.setLayout(cancelPanelLayout);
@@ -355,6 +357,42 @@ public class ManageOrderPanel extends javax.swing.JFrame {
         // TODO add your handling code here:
         dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+
+    String orderId = jTextField4.getText().trim();
+    if (orderId.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Please enter Order ID");
+        return;
+    }
+    ManageOrderController ctrl = new ManageOrderController();
+    if (ctrl.cancelOrder(orderId)) {
+        JOptionPane.showMessageDialog(this, "Order cancelled!");
+        jTextField4.setText("");
+    } else {
+        JOptionPane.showMessageDialog(this, "Failed to cancel");
+    }        
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void btnLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoadActionPerformed
+          String orderId = jTextField2.getText().trim();
+    if (orderId.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Please enter Order ID");
+        return;
+    }
+      JOptionPane.showMessageDialog(this, "Order loaded (placeholder)");
+    }//GEN-LAST:event_btnLoadActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+      String orderId = jTextField2.getText().trim();
+    int newQty = Integer.parseInt(jTextField3.getText().trim());
+    ManageOrderController ctrl = new ManageOrderController();
+    if (ctrl.modifyOrder(orderId, newQty)) {
+        JOptionPane.showMessageDialog(this, "Order modified!");
+    } else {
+        JOptionPane.showMessageDialog(this, "Failed to modify");
+    }
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
      * @param args the command line arguments
