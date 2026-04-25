@@ -10,7 +10,7 @@ public class ManageOrderController {
 
     public List<Medicine> searchMedicines(String searchText) {
         List<Medicine> list = new ArrayList<>();
-        String sql = "SELECT * FROM Medicine WHERE name LIKE ?";
+        String sql = "SELECT * FROM Medicine WHERE LOWER(name) LIKE LOWER(?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, "%" + searchText + "%");
