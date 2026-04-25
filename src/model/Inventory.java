@@ -7,7 +7,8 @@ public class Inventory {
     private double price;
     private String expiryDate;
 
-    public Inventory() {}
+    public Inventory() {
+    }
 
     public Inventory(int inventoryId, int medicineId, int stockLevel, double price, String expiryDate) {
         this.inventoryId = inventoryId;
@@ -26,14 +27,43 @@ public class Inventory {
         return stockLevel > 0;
     }
 
-    public int getInventoryId() { return inventoryId; }
-    public void setInventoryId(int inventoryId) { this.inventoryId = inventoryId; }
-    public int getMedicineId() { return medicineId; }
-    public void setMedicineId(int medicineId) { this.medicineId = medicineId; }
-    public int getStockLevel() { return stockLevel; }
-    public void setStockLevel(int stockLevel) { this.stockLevel = stockLevel; }
-    public double getPrice() { return price; }
-    public void setPrice(double price) { this.price = price; }
-    public String getExpiryDate() { return expiryDate; }
-    public void setExpiryDate(String expiryDate) { this.expiryDate = expiryDate; }
+    public int getInventoryId() {
+        return inventoryId;
+    }
+
+    public void setInventoryId(int inventoryId) {
+        this.inventoryId = inventoryId;
+    }
+
+    public int getMedicineId() {
+        return medicineId;
+    }
+
+    public void setMedicineId(int medicineId) {
+        this.medicineId = medicineId;
+    }
+
+    public int getStockLevel() {
+        return stockLevel;
+    }
+
+    public void setStockLevel(int stockLevel) {
+        this.stockLevel = stockLevel;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public String getExpiryDate() {
+        return expiryDate;
+    }
+
+    public void setExpiryDate(String expiryDate) {
+        this.expiryDate = expiryDate;
+    }
 }
