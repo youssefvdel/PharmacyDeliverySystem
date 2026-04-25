@@ -1,6 +1,7 @@
 package model;
 
 import enums.OrderStatus;
+import enums.Priority;
 import java.util.Date;
 /**
  * Order.java
@@ -18,6 +19,7 @@ public class Order {
     private OrderStatus status;
     private double totalAmount;
     private String deliveryAddress;
+    private Priority priority;
     private String estimatedDelivery;
     private String currentStatus;
     private Date lastUpdated;
@@ -41,7 +43,7 @@ public class Order {
         this.estimatedDelivery = estimatedDelivery;
         this.currentStatus = currentStatus;
         this.lastUpdated = lastUpdated;
-        }
+this.priority = priority;        }
 
         public String getOrderId() {
             return orderId;
