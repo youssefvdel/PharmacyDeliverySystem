@@ -44,7 +44,7 @@ public class CourierAssignments extends javax.swing.JFrame {
     var orders = controller.getMyOrders(courierId);
 
     String[] columns = {"Order ID", "Customer", "Date", "Status","priority"};
-    Object[][] data = new Object[orders.size()][4];
+    Object[][] data = new Object[orders.size()][5];
 
     for (int i = 0; i < orders.size(); i++) {
         data[i][0] = orders.get(i).getOrderId();
