@@ -2,16 +2,16 @@
 -- Group 39 | Derby Embedded
 -- Run this script with: ij> run 'database/schema.sql';
 
--- Drop tables if they exist (for clean setup)
-DROP TABLE OrderItem IF EXISTS;
-DROP TABLE Payment IF EXISTS;
-DROP TABLE OrderTable IF EXISTS;
-DROP TABLE Medicine IF EXISTS;
-DROP TABLE Courier IF EXISTS;
-DROP TABLE Customer IF EXISTS;
-DROP TABLE Inventory IF EXISTS;
-DROP TABLE Administrator IF EXISTS;
-DROP TABLE Staff IF EXISTS;
+-- Drop tables in reverse dependency order (Derby syntax)
+DROP TABLE OrderItem;
+DROP TABLE Payment;
+DROP TABLE OrderTable;
+DROP TABLE Medicine;
+DROP TABLE Courier;
+DROP TABLE Customer;
+DROP TABLE Inventory;
+DROP TABLE Administrator;
+DROP TABLE Staff;
 
 -- Staff (Abstract base class)
 CREATE TABLE Staff (

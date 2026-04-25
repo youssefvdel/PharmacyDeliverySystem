@@ -1,4 +1,4 @@
-package controller;
+package controllers;
 
 import exceptions.InvalidProfileException;
 import model.Customer;

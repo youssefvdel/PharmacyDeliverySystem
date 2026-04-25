@@ -1,0 +1,13 @@
+----------------------------------------------------------------
+Sat Apr 25 18:52:48 EEST 2026:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.17.1.0 - (1913217): instance a816c00e-019d-c557-f194-00000035fd20 
+on database directory /home/youssefvdel/Projects/PharmacyDeliverySystem/pharmacyDB with class loader org.codehaus.mojo.exec.URLClassLoaderBuilder$ExecJavaClassLoader@3f985a86 
+Loaded from file:/home/youssefvdel/.m2/repository/org/apache/derby/derby/10.17.1.0/derby-10.17.1.0.jar
+java.vendor=Red Hat, Inc.
+java.runtime.version=25.0.2+10
+user.dir=/home/youssefvdel/Projects/PharmacyDeliverySystem
+os.name=Linux
+os.arch=amd64
+os.version=6.19.13-200.fc43.x86_64
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''

@@ -1,2 +1,15 @@
 temp
 target
+.classpath
+.project
+.settings
+
+# Derby lock files only (exclude from git)
+*.lck
+*.lckt
+
+# IDE files
+*.iml
+.idea
+*.swp
+*.swo
