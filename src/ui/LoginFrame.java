@@ -26,79 +26,64 @@ public class LoginFrame extends javax.swing.JFrame {
         initComponents();
     }
     private String checkUserType(Connection conn, String email, String password) throws SQLException {
-    String sql = "";
-    PreparedStatement pst = null;
-    ResultSet rs = null;
-    
-    try {
-        // Check ADMINISTRATOR table
-        sql = "SELECT * FROM ADMINISTRATOR WHERE EMAIL = ? AND PASSWORD = ?";
-        pst = conn.prepareStatement(sql);
-        pst.setString(1, email);
-        pst.setString(2, password);
-        rs = pst.executeQuery();
-        
-        if (rs.next()) {
-            return "Administrator";
+        String sql = "SELECT role FROM Staff WHERE email = ? AND password = ?";
+        try (PreparedStatement pst = conn.prepareStatement(sql)) {
+            pst.setString(1, email);
+            pst.setString(2, password);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("role");
+                }
+            }
         }
-        rs.close();
-        pst.close();
-        
-        // Check COURIER table
-        sql = "SELECT * FROM COURIER WHERE EMAIL = ? AND PASSWORD = ?";
-        pst = conn.prepareStatement(sql);
-        pst.setString(1, email);
-        pst.setString(2, password);
-        rs = pst.executeQuery();
-        
-        if (rs.next()) {
-            return "Courier";
+        // Check Customer table separately
+        sql = "SELECT 1 FROM Customer WHERE email = ? AND password = ?";
+        try (PreparedStatement pst = conn.prepareStatement(sql)) {
+            pst.setString(1, email);
+            pst.setString(2, password);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    return "Customer";
+                }
+            }
         }
-        rs.close();
-        pst.close();
-        
-        // Check CUSTOMER table
-        sql = "SELECT * FROM CUSTOMER WHERE EMAIL = ? AND PASSWORD = ?";
-        pst = conn.prepareStatement(sql);
-        pst.setString(1, email);
-        pst.setString(2, password);
-        rs = pst.executeQuery();
-        
-        if (rs.next()) {
-            return "Customer";
-        }
-        
-    } finally {
-        if (rs != null) rs.close();
-        if (pst != null) pst.close();
+        return null;
     }
-    
-    return null; // Invalid credentials
-}
+
+    private String getCourierId(Connection conn, String email) throws SQLException {
+        String sql = "SELECT c.courierId FROM Courier c JOIN Staff s ON c.staffId = s.staffId WHERE s.email = ?";
+        try (PreparedStatement pst = conn.prepareStatement(sql)) {
+            pst.setString(1, email);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("courierId");
+                }
+            }
+        }
+        return null;
+    }
   private void openDashboard(String userType, String email) {
-    try {
+    try (Connection conn = util.DatabaseConnection.getConnection()) {
         switch (userType) {
-            case "Administrator":
+            case "Admin":
                 ui.AdminPanel adminFrame = new ui.AdminPanel();
                 adminFrame.setVisible(true);
                 break;
-                
             case "Courier":
-                ui.CourierAssignments courierFrame = new ui.CourierAssignments(); 
+                String courierId = getCourierId(conn, email);
+                ui.CourierAssignments courierFrame = new ui.CourierAssignments(courierId != null ? courierId : "C001");
                 courierFrame.setVisible(true);
                 break;
-                
             case "Customer":
-                ui.CustomerInterfaceFrame customerPanel = new ui.CustomerInterfaceFrame(); 
+                ui.CustomerInterfaceFrame customerPanel = new ui.CustomerInterfaceFrame();
                 customerPanel.setVisible(true);
                 break;
-                
             default:
-                JOptionPane.showMessageDialog(this, "Unknown user type", 
+                JOptionPane.showMessageDialog(this, "Unknown user type",
                         "Error", JOptionPane.ERROR_MESSAGE);
         }
     } catch (Exception e) {
-        JOptionPane.showMessageDialog(this, "Error opening dashboard: " + e.getMessage(), 
+        JOptionPane.showMessageDialog(this, "Error opening dashboard: " + e.getMessage(),
                 "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
@@ -199,33 +184,21 @@ public class LoginFrame extends javax.swing.JFrame {
         return;
     }
     
-    try {
-        // Get database connection
-        Connection conn = util.DatabaseConnection.getConnection();
-        
-        if (conn != null) {
-            String userType = checkUserType(conn, email, password);
-            
-            if (userType != null) {
-                // Login successful
-                JOptionPane.showMessageDialog(this, "Login Successful!\nWelcome as " + userType, 
-                        "Success", JOptionPane.INFORMATION_MESSAGE);
-                
-                // Open appropriate dashboard
-                openDashboard(userType, email);
-                
-                // Close login window
-                this.dispose();
-            } else {
-                JOptionPane.showMessageDialog(this, "Invalid Email or Password", 
-                        "Login Failed", JOptionPane.ERROR_MESSAGE);
-            }
-            
-            conn.close();
+    try (Connection conn = util.DatabaseConnection.getConnection()) {
+        String userType = checkUserType(conn, email, password);
+
+        if (userType != null) {
+            JOptionPane.showMessageDialog(this, "Login Successful!\nWelcome as " + userType,
+                    "Success", JOptionPane.INFORMATION_MESSAGE);
+            openDashboard(userType, email);
+            this.dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "Invalid Email or Password",
+                    "Login Failed", JOptionPane.ERROR_MESSAGE);
         }
-        
+
     } catch (SQLException ex) {
-        JOptionPane.showMessageDialog(this, "Database Error: " + ex.getMessage(), 
+        JOptionPane.showMessageDialog(this, "Database Error: " + ex.getMessage(),
                 "Error", JOptionPane.ERROR_MESSAGE);
         ex.printStackTrace();
     }
