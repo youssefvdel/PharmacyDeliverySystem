@@ -18,7 +18,29 @@ public class ManageProfileFrame extends javax.swing.JFrame {
      * Creates new form ManageProfileFrame
      */
     public ManageProfileFrame() {
+        this("CU001");
+    }
+
+    public ManageProfileFrame(String customerId) {
         initComponents();
+        loadCustomer(customerId);
+    }
+
+    private void loadCustomer(String customerId) {
+        try {
+            controllers.ManageProfileController ctrl = new controllers.ManageProfileController();
+            currentCustomer = ctrl.loadCustomer(customerId);
+            if (currentCustomer != null) {
+                jTextField1.setText(currentCustomer.getName());
+                jTextField2.setText(currentCustomer.getEmail());
+                jTextField3.setText(currentCustomer.getPassword());
+                jTextField4.setText(currentCustomer.getPhone());
+                jTextField5.setText(currentCustomer.getStreet());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            javax.swing.JOptionPane.showMessageDialog(this, "Failed to load profile: " + e.getMessage());
+        }
     }
 
     /**
@@ -166,59 +188,36 @@ public class ManageProfileFrame extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         try {
-        // Get all values from form fields
-        String name       = jTextField1.getText().trim();
-        String email      = jTextField2.getText().trim();
-        String password   = jTextField3.getText().trim();
-        String phone      = jTextField4.getText().trim();
-        String street     = jTextField5.getText().trim();
+            if (currentCustomer == null) {
+                javax.swing.JOptionPane.showMessageDialog(this, "No customer loaded");
+                return;
+            }
+            String name = jTextField1.getText().trim();
+            String email = jTextField2.getText().trim();
+            String password = jTextField3.getText().trim();
+            String phone = jTextField4.getText().trim();
+            String street = jTextField5.getText().trim();
 
-        // Create updated customer object from form data
-        Customer updatedCustomer = new Customer(
-            currentCustomer.getCustomerId(),
-            name,
-            email,
-            password,
-            phone,
-            street,
-            currentCustomer.getCity(),
-            currentCustomer.getCountry(),
-            currentCustomer.getPostalCode()
-        );
+            Customer updated = new Customer(
+                currentCustomer.getCustomerId(),
+                name, email, password, phone, street,
+                currentCustomer.getCity(),
+                currentCustomer.getCountry(),
+                currentCustomer.getPostalCode()
+            );
 
-        // Validate and save profile changes
-        ManageProfileController controller = 
-            new ManageProfileController(currentCustomer);
-        controller.updateProfile(updatedCustomer);
-
-        // Success message
-        javax.swing.JOptionPane.showMessageDialog(
-            this,
-            "Profile updated successfully!",
-            "Success",
-            javax.swing.JOptionPane.INFORMATION_MESSAGE
-        );
-
-    } catch (exceptions.InvalidProfileException ex) {
-        // Shows specific validation error from controller
-        // e.g. "Name cannot be empty"
-        // e.g. "Invalid email. Must contain '@'."
-        javax.swing.JOptionPane.showMessageDialog(
-            this,
-            ex.getMessage(),
-            "Validation Error",
-            javax.swing.JOptionPane.ERROR_MESSAGE
-        );
-
-    } catch (Exception ex) {
-        // Catches any unexpected error
-        javax.swing.JOptionPane.showMessageDialog(
-            this,
-            "Unexpected error: " + ex.getMessage(),
-            "Error",
-            javax.swing.JOptionPane.ERROR_MESSAGE
-        );
-    }
+            controllers.ManageProfileController ctrl = new controllers.ManageProfileController();
+            if (ctrl.updateProfile(updated)) {
+                currentCustomer = updated;
+                javax.swing.JOptionPane.showMessageDialog(this, "Profile updated successfully!");
+            } else {
+                javax.swing.JOptionPane.showMessageDialog(this, "Update failed");
+            }
+        } catch (exceptions.InvalidProfileException ex) {
+            javax.swing.JOptionPane.showMessageDialog(this, ex.getMessage(), "Validation Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        } catch (Exception ex) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
