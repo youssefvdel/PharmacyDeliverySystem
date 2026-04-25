@@ -3,7 +3,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package ui;
-
+import java.sql.*;
+import javax.swing.JOptionPane;
+import ui.ManageOrderPanel;
+import ui.AdminPanel;
+import ui.CustomerInterfaceFrame;
+import ui.CourierAssignments;
 /**
  *
  * @author verhafter
@@ -16,8 +21,86 @@ public class LoginFrame extends javax.swing.JFrame {
      * Creates new form LoginFrame
      */
     public LoginFrame() {
+        setLocationRelativeTo(null);
         initComponents();
     }
+    private String checkUserType(Connection conn, String email, String password) throws SQLException {
+    String sql = "";
+    PreparedStatement pst = null;
+    ResultSet rs = null;
+    
+    try {
+        // Check ADMINISTRATOR table
+        sql = "SELECT * FROM ADMINISTRATOR WHERE EMAIL = ? AND PASSWORD = ?";
+        pst = conn.prepareStatement(sql);
+        pst.setString(1, email);
+        pst.setString(2, password);
+        rs = pst.executeQuery();
+        
+        if (rs.next()) {
+            return "Administrator";
+        }
+        rs.close();
+        pst.close();
+        
+        // Check COURIER table
+        sql = "SELECT * FROM COURIER WHERE EMAIL = ? AND PASSWORD = ?";
+        pst = conn.prepareStatement(sql);
+        pst.setString(1, email);
+        pst.setString(2, password);
+        rs = pst.executeQuery();
+        
+        if (rs.next()) {
+            return "Courier";
+        }
+        rs.close();
+        pst.close();
+        
+        // Check CUSTOMER table
+        sql = "SELECT * FROM CUSTOMER WHERE EMAIL = ? AND PASSWORD = ?";
+        pst = conn.prepareStatement(sql);
+        pst.setString(1, email);
+        pst.setString(2, password);
+        rs = pst.executeQuery();
+        
+        if (rs.next()) {
+            return "Customer";
+        }
+        
+    } finally {
+        if (rs != null) rs.close();
+        if (pst != null) pst.close();
+    }
+    
+    return null; // Invalid credentials
+}
+  private void openDashboard(String userType, String email) {
+    try {
+        switch (userType) {
+            case "Administrator":
+                ui.AdminPanel adminFrame = new ui.AdminPanel();
+                adminFrame.setVisible(true);
+                break;
+                
+            case "Courier":
+                ui.CourierAssignments courierFrame = new ui.CourierAssignments(); 
+                courierFrame.setVisible(true);
+                break;
+                
+            case "Customer":
+                ui.CustomerInterfaceFrame customerPanel = new ui.CustomerInterfaceFrame(); 
+                customerPanel.setVisible(true);
+                break;
+                
+            default:
+                JOptionPane.showMessageDialog(this, "Unknown user type", 
+                        "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Error opening dashboard: " + e.getMessage(), 
+                "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -28,21 +111,130 @@ public class LoginFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel1 = new javax.swing.JLabel();
+        Email = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        jPasswordField1 = new javax.swing.JPasswordField();
+        jLabel3 = new javax.swing.JLabel();
+        btnCancel = new javax.swing.JButton();
+        btnLogin = new javax.swing.JButton();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jLabel1.setFont(new java.awt.Font("sansserif", 1, 18)); // NOI18N
+        jLabel1.setText("PHARMACY DELIVERY SYSTEM");
+
+        jLabel2.setText("Email");
+
+        jLabel3.setText("Password");
+
+        btnCancel.setText("Cancel");
+        btnCancel.addActionListener(this::btnCancelActionPerformed);
+
+        btnLogin.setText("Login");
+        btnLogin.addActionListener(this::btnLoginActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(54, Short.MAX_VALUE)
+                .addComponent(jLabel1)
+                .addGap(51, 51, 51))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(35, 35, 35)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addGap(26, 26, 26))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addGap(51, 51, 51)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnCancel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnLogin))
+                    .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(Email, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1)
+                .addGap(46, 46, 46)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(Email, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnLogin)
+                    .addComponent(btnCancel))
+                .addContainerGap(47, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
+         String email = Email.getText().trim();
+    String password = new String(jPasswordField1.getPassword());
+    
+    // Validation
+    if (email.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Please enter email", "Error", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+    
+    if (password.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Please enter password", "Error", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+    
+    try {
+        // Get database connection
+        Connection conn = util.DatabaseConnection.getConnection();
+        
+        if (conn != null) {
+            String userType = checkUserType(conn, email, password);
+            
+            if (userType != null) {
+                // Login successful
+                JOptionPane.showMessageDialog(this, "Login Successful!\nWelcome as " + userType, 
+                        "Success", JOptionPane.INFORMATION_MESSAGE);
+                
+                // Open appropriate dashboard
+                openDashboard(userType, email);
+                
+                // Close login window
+                this.dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Invalid Email or Password", 
+                        "Login Failed", JOptionPane.ERROR_MESSAGE);
+            }
+            
+            conn.close();
+        }
+        
+    } catch (SQLException ex) {
+        JOptionPane.showMessageDialog(this, "Database Error: " + ex.getMessage(), 
+                "Error", JOptionPane.ERROR_MESSAGE);
+        ex.printStackTrace();
+    }
+    
+    }//GEN-LAST:event_btnLoginActionPerformed
+
+    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
+
+        System.exit(0);
+    }//GEN-LAST:event_btnCancelActionPerformed
 
     /**
      * @param args the command line arguments
@@ -70,5 +262,12 @@ public class LoginFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField Email;
+    private javax.swing.JButton btnCancel;
+    private javax.swing.JButton btnLogin;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JPasswordField jPasswordField1;
     // End of variables declaration//GEN-END:variables
 }
