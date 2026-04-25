@@ -7,6 +7,7 @@ import java.util.List;
 import model.Courier;
 import model.Order;
 import enums.OrderStatus;
+import enums.Priority;
 
 public class AssignCourierController {
 
@@ -25,23 +26,24 @@ public class AssignCourierController {
 
             while (rs.next()) {
 
-                // 🔹 courier = null initially (not assigned yet)
+              
                 Courier courier = null;
 
-                // 🔹 convert status string → enum
-                OrderStatus status = OrderStatus.valueOf(rs.getString("STATUS"));
+               
+                OrderStatus.valueOf(rs.getString("STATUS"))
+                Priority priority = Priority.valueOf(rs.getString("PRIORITY"));
 
                 Order order = new Order(
                     rs.getString("ORDER_ID"),
                     rs.getString("CUSTOMER_ID"),
                     courier,
-                    rs.getString("ORDER_DATE"), // now string
+                    rs.getString("ORDER_DATE"),
                     status,
                     rs.getDouble("TOTAL_AMOUNT"),
-                    rs.getString("DELIVERY_ADDRESS"),      // make sure column exists
-                    rs.getString("ESTIMATED_DELIVERY"),    // make sure column exists
-                    rs.getString("CURRENT_STATUS"),        // make sure column exists
-                    rs.getTimestamp("LAST_UPDATED")        // Date
+                    rs.getString("DELIVERY_ADDRESS"),      
+                    rs.getString("ESTIMATED_DELIVERY"),    
+                    rs.getString("CURRENT_STATUS"),        
+                    rs.getTimestamp("LAST_UPDATED")        
                 );
 
                 orders.add(order);
@@ -101,7 +103,7 @@ public class AssignCourierController {
 
             conn.setAutoCommit(false);
 
-            // 🔹 update order
+            // update order
             String sql1 =
                 "UPDATE ORDER_TABLE SET COURIER_ID=?, STATUS='CONFIRMED' WHERE ORDER_ID=?";
             PreparedStatement ps1 = conn.prepareStatement(sql1);
