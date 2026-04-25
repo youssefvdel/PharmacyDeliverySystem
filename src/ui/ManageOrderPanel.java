@@ -384,14 +384,26 @@ public class ManageOrderPanel extends javax.swing.JFrame {
     }//GEN-LAST:event_btnLoadActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-      String orderId = jTextField2.getText().trim();
-    int newQty = Integer.parseInt(jTextField3.getText().trim());
-    ManageOrderController ctrl = new ManageOrderController();
-    if (ctrl.modifyOrder(orderId, newQty)) {
-        JOptionPane.showMessageDialog(this, "Order modified!");
-    } else {
-        JOptionPane.showMessageDialog(this, "Failed to modify");
-    }
+        String orderId = jTextField2.getText().trim();
+        if (orderId.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please enter Order ID");
+            return;
+        }
+        try {
+            int newQty = Integer.parseInt(jTextField3.getText().trim());
+            if (newQty <= 0) {
+                JOptionPane.showMessageDialog(this, "Quantity must be greater than 0");
+                return;
+            }
+            ManageOrderController ctrl = new ManageOrderController();
+            if (ctrl.modifyOrder(orderId, newQty)) {
+                JOptionPane.showMessageDialog(this, "Order modified!");
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to modify. Order not found, not pending, or insufficient stock.");
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Please enter a valid quantity number");
+        }
     }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
