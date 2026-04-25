@@ -163,7 +163,7 @@ public class AdminPanel extends javax.swing.JFrame {
 
     private void assignButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_assignButtonActionPerformed
 
-        if (selectedOrderId == null || selectedCourierId == null) {
+      /*  if (selectedOrderId == null || selectedCourierId == null) {
             JOptionPane.showMessageDialog(this, "Select order and courier first");
             return;
         }
@@ -181,7 +181,7 @@ public class AdminPanel extends javax.swing.JFrame {
 
         } catch (InvalidSelectionException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage());
-        }
+        }*/
     }//GEN-LAST:event_assignButtonActionPerformed
 
     /**
