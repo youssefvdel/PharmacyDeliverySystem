@@ -14,10 +14,7 @@ public class Customer {
     private String email;
     private String password;
     private String phone;
-    private String street;
-    private String city;
-    private String country;
-    private String postalCode;
+    private String Address;
     private List<String> orderHistory;
 
     public Customer(String customerId, String name, String email,String password, String phone, String street, String city,String country, String postalCode)
@@ -27,10 +24,7 @@ public class Customer {
         this.email = email;
         this.password = password;
         this.phone = phone;
-        this.street = street;
-        this.city = city;
-        this.country = country;
-        this.postalCode = postalCode;
+        this.Address = Address;
         this.orderHistory = new ArrayList<>();
     }
 
@@ -74,26 +68,15 @@ public class Customer {
         return phone;
     }
 
-    public String getStreet() {
-        return street;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public String getPostalCode() {
-        return postalCode;
-    }
   
     public List<String> getOrderHistory() {
         return orderHistory;
     }
-   
+
+    public String getAddress() {
+        return Address;
+    }
+    
     // Setters
 
     public void setCustomerId(String customerId) {
@@ -116,20 +99,8 @@ public class Customer {
         this.phone = phone;
     }
 
-    public void setStreet(String street) {
-        this.street = street;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public void setPostalCode(String postalCode) {
-        this.postalCode = postalCode;
+    public void setAddress(String Address) {
+        this.Address = Address;
     }
 
     public void setOrderHistory(List<String> orderHistory) {

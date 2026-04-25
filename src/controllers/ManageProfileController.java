@@ -1,4 +1,4 @@
-package controller;
+package controllers;
 
 import exceptions.InvalidProfileException;
 import model.Customer;
@@ -58,29 +58,12 @@ public class ManageProfileController {
                 "Phone number cannot be empty."
             );
 
-        if (customer.getStreet() == null ||
-            customer.getStreet().isEmpty())
+        if (customer.getAddress() == null ||
+            customer.getAddress().isEmpty())
             throw new InvalidProfileException(
-                "Street cannot be empty."
+                "Address cannot be empty."
             );
 
-        if (customer.getCity() == null ||
-            customer.getCity().isEmpty())
-            throw new InvalidProfileException(
-                "City cannot be empty."
-            );
-
-        if (customer.getCountry() == null ||
-            customer.getCountry().isEmpty())
-            throw new InvalidProfileException(
-                "Country cannot be empty."
-            );
-
-        if (customer.getPostalCode() == null ||
-            customer.getPostalCode().isEmpty())
-            throw new InvalidProfileException(
-                "Postal code cannot be empty."
-            );
 
         return true;
     }
@@ -96,10 +79,7 @@ public class ManageProfileController {
         currentCustomer.setName(customer.getName());
         currentCustomer.setEmail(customer.getEmail());
         currentCustomer.setPhone(customer.getPhone());
-        currentCustomer.setStreet(customer.getStreet());
-        currentCustomer.setCity(customer.getCity());
-        currentCustomer.setCountry(customer.getCountry());
-        currentCustomer.setPostalCode(customer.getPostalCode());
+        currentCustomer.setAddress(customer.getAddress());
 
         // Keep old password if new one is empty
         if (customer.getPassword() != null &&
