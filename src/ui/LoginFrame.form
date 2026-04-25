@@ -47,7 +47,7 @@
                       <Component id="btnLogin" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Component id="jPasswordField1" min="-2" pref="227" max="-2" attributes="0"/>
-                  <Component id="Email" alignment="1" min="-2" pref="227" max="-2" attributes="0"/>
+                  <Component id="Email" alignment="0" min="-2" pref="227" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
           </Group>
