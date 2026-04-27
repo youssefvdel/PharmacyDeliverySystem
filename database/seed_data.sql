@@ -2,18 +2,18 @@
 -- Run after schema.sql
 
 -- Staff
-INSERT INTO Staff VALUES ('S001', 'Admin User', 'admin@pharmacy.com', 'admin123', 'Admin');
-INSERT INTO Staff VALUES ('S002', 'John Courier', 'john@pharmacy.com', 'courier123', 'Courier');
-INSERT INTO Staff VALUES ('S003', 'Sarah Courier', 'sarah@pharmacy.com', 'courier456', 'Courier');
+INSERT INTO Staff VALUES ('S001', 'Admin User', 'admin@email.com', 'admin', 'Admin');
+INSERT INTO Staff VALUES ('S002', 'Omar Hassan', 'omar.hassan@pharmacy.com', '123456', 'Courier');
+INSERT INTO Staff VALUES ('S003', 'Ahmed Khalil', 'ahmed.khalil@pharmacy.com', '123456', 'Courier');
 
 -- Administrators
 INSERT INTO Administrator VALUES ('A001', 'S001');
 
 -- Couriers
 INSERT INTO Courier (courierId, staffId, courierName, phoneNumber, isAvailable, currentLocation, deliveryArea) 
-VALUES ('C001', 'S002', 'John Courier', '01001234567', true, 'Cairo', 'Downtown');
+VALUES ('C001', 'S002', 'Omar Hassan', '01001234567', true, 'Cairo', 'Downtown');
 INSERT INTO Courier (courierId, staffId, courierName, phoneNumber, isAvailable, currentLocation, deliveryArea) 
-VALUES ('C002', 'S003', 'Sarah Courier', '01007654321', true, 'Cairo', 'Nasr City');
+VALUES ('C002', 'S003', 'Ahmed Khalil', '01007654321', true, 'Cairo', 'Nasr City');
 
 -- Customers
 INSERT INTO Customer VALUES ('CU001', 'Youssef Adel', 'youssef@email.com', 'pass123', '01001112233', '123 Main St, Cairo');
